@@ -11,7 +11,12 @@
     header.classList.toggle('scrolled', y > 10);
     bar.style.transform = 'scaleX(' + (h > 0 ? y / h : 0) + ')';
   }
-  addEventListener('scroll', onScroll, { passive: true }); onScroll();
+  var ticking = false;
+  addEventListener('scroll', function () {
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(function () { ticking = false; onScroll(); });
+  }, { passive: true });
+  onScroll();
 
   /* ---------- мобильное меню ---------- */
   var mnav = $('.mnav');

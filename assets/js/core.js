@@ -287,12 +287,23 @@
     els.forEach(function (el) { io.observe(el); });
   }
 
+  /* ---------- пауза бесконечных анимаций вне экрана ----------
+     Браузер продолжает крутить анимации даже у невидимых блоков —
+     ставим им класс anim-off, CSS переводит анимации на паузу. */
+  function pauseOffscreen() {
+    if (!('IntersectionObserver' in window)) return;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { en.target.classList.toggle('anim-off', !en.isIntersecting); });
+    }, { rootMargin: '120px 0px' });
+    document.querySelectorAll('section, .topbar, .sizes-strip, .ticker').forEach(function (el) { io.observe(el); });
+  }
+
   window.MS = {
     data: D, fmt: fmt, byId: byId, img: img, add: add, cart: function () { return cart; },
     openCart: openCart, openCheckout: openCheckout, openCallback: openCallback,
     toast: toast, reveal: reveal, counters: counters, maskPhone: maskPhone, reduced: reduced, render: render
   };
 
-  document.addEventListener('DOMContentLoaded', function () { render(); reveal(); counters(); });
+  document.addEventListener('DOMContentLoaded', function () { render(); reveal(); counters(); pauseOffscreen(); });
   if (document.readyState !== 'loading') { render(); }
 })();
